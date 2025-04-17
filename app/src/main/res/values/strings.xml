@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">TLC go-anywhere</string>
+    <string name="seriebj">Serie BJ</string>
+    <string name="serie20">Serie 20</string>
+    <string name="serie40">Serie 40</string>
+    <string name="serie40safari">Serie 40 Safari</string>
+    <string name="serie40pkp">Serie 40 Pick Up</string>
+    <string name="serie50">Serie 50</string>
+    <string name="serie60">Serie 60</string>
+    <string name="serie70">Serie 70</string>
+    <string name="serie70lx">Serie 70 Safari</string>
+    <string name="serie70pkp">Serie 70 Pick Up</string>
+    <string name="serie80">Serie 80</string>
+    <string name="dsc_seriebj">En enero de 1951, cinco meses después de comenzar a trabajar en el diseño, Toyota había producido su primer prototipo. A partir de piezas existentes de Toyota, el prototipo incorporaba el chasis del camión de una tonelada Tipo SB y el gran motor de 3.4 litros de gasolina del Tipo B. A raíz de la popularidad en aquel momento del Willys Jeep (uno de los favoritos de las fuerzas ocupantes), Toyota decidió llamar a su nuevo prototipo Jeep BJ (B por el motor del Tipo B y J por el Jeep 4x4).</string>
+    <string name="dsc_serie20">Con las raíces del “BJ” aún reconocibles, la Serie 20 presumía de una carrocería con unas líneas más suaves, que incorporaba unos faros delanteros integrados y un habitáculo más espacioso. El confort de marcha también mejoró, con una suspensión de ballesta delante y detrás para absorber las sacudidas, mientras que las vibraciones en el habitáculo se reducían con unos nuevos cojinetes de goma en la suspensión.</string>
+    <string name="dsc_serie40">La tercera generación del vehículo, el Serie 40, llegó al mercado en 1960, momento a partir del cual este emblemático modelo atravesó ríos y recorrió caminos rocosos durante 24 años, y se ganó el apodo de “The Forty” (el Cuarenta).</string>
+    <string name="dsc_serie40safari">Como con la anterior renovación del modelo, las revisiones del diseño exterior fueron sutiles, cuanto menos. Se caracterizaba por unos pasos de rueda más rectangulares y los intermitentes colocados sobre las aletas delanteras, pero el cambio más memorable fue la adición de un marco en forma de rombo en torno a los faros delanteros y la parrilla del radiador.</string>
+    <string name="dsc_serie40pkp">Uno de los cambios principales radicaba en la posibilidad de seleccionar tres modos de conducción distintos —Completo, Económico y Moderado—, en función del tipo de terreno con que se encontraba el conductor. Se siguió utilizando una transmisión manual de tres velocidades, que sin embargo ahora incluía una caja de transferencia que reducía las relaciones globales para ofrecer un total de seis velocidades; tres para carretera y tres para todo terreno.</string>
+    <string name="dsc_serie50">En 1967, la siempre creciente demanda de una mayor capacidad de carga de las carrocerías familiares llevó a la introducción de la nueva variante FJ55, con una mayor distancia entre ejes (2700 mm), un estilo renovado y un confort similar al de un turismo.</string>
+    <string name="dsc_serie60">Más adelante, en 1980, el modelo 55 fue sustituido por la Serie 60, más grande y espaciosa. En un segmento del mercado cada vez más disputado, los ingenieros se centraron en mejorar la calidad de la marcha y ofrecer un interior más lujoso, con materiales de tacto blando y asientos delanteros separados (en lugar de un banco).</string>
+    <string name="dsc_serie70">Tras 24 años de éxito arrollador (29 si contamos la Serie 20 inicial) de la Serie 40 sin apenas cambios, 1984 anunció la llegada de un nuevo Land Cruiser —la Serie 70—, un vehículo preparado para el mundo moderno.</string>
+    <string name="dsc_serie70lx">Estilo Safari. Los ingenieros creyeron que había que hacer borrón y cuenta nueva con el nuevo modelo, un vehículo que se enmarcaba en un escenario mucho más competitivo, donde la demanda de vehículos de uso recreativo estaba en alza.</string>
+    <string name="dsc_serie70pkp">Estilo Pick Up. Se tomó la decisión de ofrecer el nuevo Land Cruiser en dos formatos: Heavy Duty (alto rendimiento), que proporcionaba una robusta máquina de carga para quienes necesitaban resistencia a expensas de un confort más limitado; y Light Duty (bajo rendimiento), para recorrer con más comodidad largas distancias con amigos y familia.</string>
+    <string name="dsc_serie80">Después de las series anteriores, Land Cruiser sigue el camino de la evolución como un SUV de lujo. El Land Cruiser de la "serie 80", que hizo su debut en 1989, es un modelo que hace que el interior y el exterior sean lujosos al tiempo que mantiene la manejabilidad en carreteras en mal estado.</string>
+
+    <string name="anno_fabricacion">Año de fabricación: %d</string>
+    <string name="descripcion">Descripción:</string>
+    <string name="expand_button_content_description">Muestre más o menos información del vehículo.</string>
+</resources>
