@@ -1,7 +1,11 @@
 package utn.profe.tlcgo_anywhere.ui.screens
 
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,12 +17,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -29,19 +33,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import utn.profe.tlcgo_anywhere.R
 import utn.profe.tlcgo_anywhere.ui.viewmodel.VehiculoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,6 +50,20 @@ fun RegistroVehiculoScreen(
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
+
+    // Image picker launcher
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            viewModel.selectedImageUri.value = it
+
+            // Load the selected image as a Bitmap for preview
+            context.contentResolver.openInputStream(it)?.use { inputStream ->
+                viewModel.selectedImageBitmap.value = android.graphics.BitmapFactory.decodeStream(inputStream)
+            }
+        }
+    }
 
     LaunchedEffect(uiState) {
         when (uiState) {
@@ -85,39 +97,13 @@ fun RegistroVehiculoScreen(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Serie Dropdown
-            var expanded by remember { mutableStateOf(false) }
-
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = it },
+            // Nombre Serie
+            OutlinedTextField(
+                value = viewModel.nombreSerie.value,
+                onValueChange = { viewModel.nombreSerie.value = it },
+                label = { Text("Nombre de la Serie") },
                 modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = stringResource(viewModel.selectedSerie.value),
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Serie") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor()
-                )
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    viewModel.seriesOptions.keys.forEach { serie ->
-                        DropdownMenuItem(
-                            text = { Text(stringResource(serie)) },
-                            onClick = {
-                                viewModel.onSerieSelected(serie)
-                                expanded = false
-                            }
-                        )
-                    }
-                }
-            }
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -132,24 +118,55 @@ fun RegistroVehiculoScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Display selected image
-            viewModel.selectedImage.value?.let { bitmap ->
-                Image(
-                    bitmap = bitmap.asImageBitmap(),
-                    contentDescription = "Selected vehicle image",
-                    modifier = Modifier
-                        .size(200.dp)
-                        .padding(8.dp)
-                )
-            }
+            // Características
+            OutlinedTextField(
+                value = viewModel.caracteristicas.value,
+                onValueChange = { viewModel.caracteristicas.value = it },
+                label = { Text("Características") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp),
+                maxLines = 5
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
+
+            // Image selector
+            Box(
+                modifier = Modifier
+                    .size(200.dp)
+                    .clickable { imagePickerLauncher.launch("image/*") },
+                contentAlignment = Alignment.Center
+            ) {
+                viewModel.selectedImageBitmap.value?.let { bitmap ->
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = "Selected vehicle image",
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } ?: run {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AddAPhoto,
+                            contentDescription = "Add photo",
+                            modifier = Modifier.size(64.dp)
+                        )
+                        Text("Seleccionar Imagen")
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Save button
             Button(
                 onClick = { viewModel.saveVehiculo() },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = viewModel.annoLanzamiento.value.isNotEmpty() &&
+                enabled = viewModel.nombreSerie.value.isNotEmpty() &&
+                        viewModel.annoLanzamiento.value.isNotEmpty() &&
+                        viewModel.caracteristicas.value.isNotEmpty() &&
                         viewModel.uiState.value !is VehiculoViewModel.UiState.Loading
             ) {
                 Text("Guardar Vehículo")
@@ -162,7 +179,7 @@ fun RegistroVehiculoScreen(
                 onClick = onNavigateToList,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Ver Vehículos Guardados")
+                Text("Ver Vehículos Guardados!!!")
             }
 
             // Loading indicator

@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
@@ -13,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -20,7 +22,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import utn.profe.tlcgo_anywhere.data.vehiculos
 import utn.profe.tlcgo_anywhere.ui.components.TLCgoanywhereTopAppBar
 import utn.profe.tlcgo_anywhere.ui.screens.RegistroVehiculoScreen
 import utn.profe.tlcgo_anywhere.ui.screens.VehiculosGuardadosScreen
@@ -54,7 +55,8 @@ fun TLCGoAnywhereNavigation() {
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
             TLCgoanywhereApp(
-                onNavigateToRegister = { navController.navigate("register") }
+                onNavigateToRegister = { navController.navigate("register") },
+                viewModel = viewModel
             )
         }
         composable("register") {
@@ -76,7 +78,11 @@ fun TLCGoAnywhereNavigation() {
  * Composable that displays the home screen with a button to navigate to the register screen
  */
 @Composable
-fun TLCgoanywhereApp(onNavigateToRegister: () -> Unit) {
+fun TLCgoanywhereApp(
+    onNavigateToRegister: () -> Unit,
+    viewModel: VehiculoViewModel
+) {
+    val vehiculos by viewModel.vehiculosFromDb.collectAsState()
     Scaffold(
         topBar = {
             TLCgoanywhereTopAppBar()
@@ -89,10 +95,10 @@ fun TLCgoanywhereApp(onNavigateToRegister: () -> Unit) {
     ) { paddingValues ->
         LazyColumn(contentPadding = paddingValues) {
             items(vehiculos) {
-//                VehiculoItem(
-//                    vehiculo = it,
-//                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
-//                )
+                VehiculoItem(
+                    vehiculo = it,
+                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+                )
             }
         }
     }

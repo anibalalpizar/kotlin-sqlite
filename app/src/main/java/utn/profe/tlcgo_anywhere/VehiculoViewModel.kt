@@ -2,6 +2,7 @@ package utn.profe.tlcgo_anywhere.ui.viewmodel
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -12,13 +13,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import utn.profe.tlcgo_anywhere.R
-import utn.profe.tlcgo_anywhere.data.Vehiculo
 import utn.profe.tlcgo_anywhere.data.VehiculoDB
 import utn.profe.tlcgo_anywhere.data.VehiculoRepository
-import utn.profe.tlcgo_anywhere.data.vehiculos
 
-class VehiculoViewModel(private val repository: VehiculoRepository) : ViewModel() {
+class VehiculoViewModel(val repository: VehiculoRepository) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Initial)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -27,40 +25,11 @@ class VehiculoViewModel(private val repository: VehiculoRepository) : ViewModel(
     val vehiculosFromDb: StateFlow<List<VehiculoDB>> = _vehiculosFromDb.asStateFlow()
 
     // Form state
-    val selectedSerie = mutableStateOf(R.string.seriebj)
+    val nombreSerie = mutableStateOf("")
     val annoLanzamiento = mutableStateOf("")
-    val selectedDescripcion = mutableStateOf(R.string.dsc_seriebj)
-    val selectedImage = mutableStateOf<Bitmap?>(null)
-
-    // Series options for dropdown
-    val seriesOptions = mapOf(
-        R.string.seriebj to R.string.dsc_seriebj,
-        R.string.serie20 to R.string.dsc_serie20,
-        R.string.serie40 to R.string.dsc_serie40,
-        R.string.serie40safari to R.string.dsc_serie40safari,
-        R.string.serie40pkp to R.string.dsc_serie40pkp,
-        R.string.serie50 to R.string.dsc_serie50,
-        R.string.serie60 to R.string.dsc_serie60,
-        R.string.serie70 to R.string.dsc_serie70,
-        R.string.serie70lx to R.string.dsc_serie70lx,
-        R.string.serie70pkp to R.string.dsc_serie70pkp,
-        R.string.serie80 to R.string.dsc_serie80
-    )
-
-    // Image resources mapping
-    val imageResources = mapOf(
-        R.string.seriebj to R.drawable.seriebj,
-        R.string.serie20 to R.drawable.serie20,
-        R.string.serie40 to R.drawable.serie40,
-        R.string.serie40safari to R.drawable.serie40safari,
-        R.string.serie40pkp to R.drawable.serie40pkp,
-        R.string.serie50 to R.drawable.serie50,
-        R.string.serie60 to R.drawable.serie60,
-        R.string.serie70 to R.drawable.serie70,
-        R.string.serie70lx to R.drawable.serie70lx,
-        R.string.serie70pkp to R.drawable.serie70pkp,
-        R.string.serie80 to R.drawable.serie80
-    )
+    val caracteristicas = mutableStateOf("")
+    val selectedImageUri = mutableStateOf<Uri?>(null)
+    val selectedImageBitmap = mutableStateOf<Bitmap?>(null)
 
     init {
         loadVehiculos()
@@ -81,40 +50,49 @@ class VehiculoViewModel(private val repository: VehiculoRepository) : ViewModel(
         }
     }
 
-    fun onSerieSelected(serie: Int) {
-        selectedSerie.value = serie
-        selectedDescripcion.value = seriesOptions[serie] ?: R.string.dsc_seriebj
-
-        // Update image
+    fun loadImageFromPath(path: String?) {
         viewModelScope.launch {
             try {
-                val drawableId = imageResources[serie] ?: R.drawable.seriebj
                 val bitmap = withContext(Dispatchers.IO) {
-                    repository.getDrawableAsBitmap(drawableId)
+                    repository.getImageFromPath(path)
                 }
-                selectedImage.value = bitmap
+                selectedImageBitmap.value = bitmap
             } catch (e: Exception) {
-                selectedImage.value = null
+                // Handle error
+                selectedImageBitmap.value = null
             }
         }
     }
 
     fun saveVehiculo() {
-        val anno = annoLanzamiento.value.toIntOrNull() ?: return
+        if (nombreSerie.value.isBlank() || annoLanzamiento.value.isBlank() || caracteristicas.value.isBlank()) {
+            _uiState.value = UiState.Error("Todos los campos son obligatorios")
+            return
+        }
+
+        val anno = annoLanzamiento.value.toIntOrNull() ?: run {
+            _uiState.value = UiState.Error("El año debe ser un número válido")
+            return
+        }
 
         viewModelScope.launch {
             _uiState.value = UiState.Loading
             try {
                 withContext(Dispatchers.IO) {
                     repository.saveVehiculo(
-                        selectedSerie.value,
+                        nombreSerie.value,
                         anno,
-                        selectedDescripcion.value,
-                        selectedImage.value
+                        caracteristicas.value,
+                        selectedImageUri.value
                     )
                 }
                 // Reset form
+                nombreSerie.value = ""
                 annoLanzamiento.value = ""
+                caracteristicas.value = ""
+                selectedImageUri.value = null
+                selectedImageBitmap.value = null
+
                 // Reload list
                 loadVehiculos()
                 _uiState.value = UiState.Success

@@ -13,19 +13,19 @@ class VehiculoDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NA
         // Table and column names
         const val TABLE_VEHICULOS = "vehiculos"
         const val COLUMN_ID = "id"
-        const val COLUMN_SERIE = "serie"
+        const val COLUMN_NOMBRE_SERIE = "nombre_serie"
         const val COLUMN_ANNO = "anno"
         const val COLUMN_CARACTERISTICAS = "caracteristicas"
-        const val COLUMN_IMAGEN = "imagen"
+        const val COLUMN_IMAGEN_PATH = "imagen_path"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
         val CREATE_VEHICULOS_TABLE = ("CREATE TABLE " + TABLE_VEHICULOS + "("
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + COLUMN_SERIE + " INTEGER NOT NULL,"
+                + COLUMN_NOMBRE_SERIE + " TEXT NOT NULL,"
                 + COLUMN_ANNO + " INTEGER NOT NULL,"
-                + COLUMN_CARACTERISTICAS + " INTEGER NOT NULL,"
-                + COLUMN_IMAGEN + " BLOB"
+                + COLUMN_CARACTERISTICAS + " TEXT NOT NULL,"
+                + COLUMN_IMAGEN_PATH + " TEXT"
                 + ")")
         db.execSQL(CREATE_VEHICULOS_TABLE)
     }

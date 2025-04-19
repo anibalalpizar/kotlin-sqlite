@@ -28,16 +28,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import utn.profe.tlcgo_anywhere.R
 import utn.profe.tlcgo_anywhere.data.VehiculoDB
 import utn.profe.tlcgo_anywhere.ui.viewmodel.VehiculoViewModel
 
@@ -49,11 +50,16 @@ fun VehiculosGuardadosScreen(
 ) {
     val vehiculos by viewModel.vehiculosFromDb.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = true) {
+        viewModel.loadVehiculos()
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Vehículos Guardados") },
+                title = { Text("Vehículos Guardados :)") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -90,6 +96,7 @@ fun VehiculosGuardadosScreen(
                         items(vehiculos) { vehiculo ->
                             VehiculoItem(
                                 vehiculo = vehiculo,
+                                viewModel = viewModel,
                                 onDelete = { viewModel.deleteVehiculo(vehiculo.id) }
                             )
                         }
@@ -103,8 +110,16 @@ fun VehiculosGuardadosScreen(
 @Composable
 fun VehiculoItem(
     vehiculo: VehiculoDB,
+    viewModel: VehiculoViewModel,
     onDelete: () -> Unit
 ) {
+    val context = LocalContext.current
+    val bitmap = remember {
+        vehiculo.imagenPath?.let {
+            viewModel.repository.getImageFromPath(it)
+        }
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -117,9 +132,9 @@ fun VehiculoItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Vehicle image
-            vehiculo.imagen?.let { bitmap ->
+            bitmap?.let { bmp ->
                 Image(
-                    bitmap = bitmap.asImageBitmap(),
+                    bitmap = bmp.asImageBitmap(),
                     contentDescription = "Vehicle image",
                     modifier = Modifier.size(80.dp)
                 )
@@ -139,7 +154,7 @@ fun VehiculoItem(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = stringResource(vehiculo.serie),
+                    text = vehiculo.nombreSerie,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -147,14 +162,14 @@ fun VehiculoItem(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = stringResource(R.string.anno_fabricacion, vehiculo.annoLanzamiento),
+                    text = "Año: ${vehiculo.annoLanzamiento}",
                     style = MaterialTheme.typography.bodyMedium
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = stringResource(vehiculo.caracteristicas),
+                    text = vehiculo.caracteristicas,
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 2
                 )
