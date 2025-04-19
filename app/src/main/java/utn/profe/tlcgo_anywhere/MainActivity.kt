@@ -82,24 +82,8 @@ fun TLCgoanywhereApp(
     onNavigateToRegister: () -> Unit,
     viewModel: VehiculoViewModel
 ) {
-    val vehiculos by viewModel.vehiculosFromDb.collectAsState()
-    Scaffold(
-        topBar = {
-            TLCgoanywhereTopAppBar()
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = onNavigateToRegister) {
-                Text("+")
-            }
-        }
-    ) { paddingValues ->
-        LazyColumn(contentPadding = paddingValues) {
-            items(vehiculos) {
-                VehiculoItem(
-                    vehiculo = it,
-                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
-                )
-            }
-        }
-    }
+    VehiculosGuardadosScreen(
+        viewModel = viewModel,
+        onNavigateToRegister = onNavigateToRegister
+    )
 }
